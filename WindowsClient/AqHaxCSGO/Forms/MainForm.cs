@@ -20,10 +20,11 @@ using MaterialSkin;
 using MaterialSkin.Controls;
 using Newtonsoft.Json;
 using System.Net;
-using SlimDX.DirectInput;
 using System.Threading;
 using AqHaxCSGO.Misc;
 using AqHaxCSGO.Objects.Structs;
+using AqHaxCSGO.Hacks.Features;
+using AqHaxCSGO.Hacks;
 
 namespace AqHaxCSGO 
 {
@@ -187,6 +188,7 @@ namespace AqHaxCSGO
             timer.Elapsed += new ElapsedEventHandler(UpdateHandle);
             timer.Interval = 90000;
             timer.Start();
+            WallHack.SetUp();
             #endregion
         }
 

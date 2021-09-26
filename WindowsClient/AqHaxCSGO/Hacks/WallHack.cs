@@ -7,15 +7,72 @@ using System.Threading;
 using AqHaxCSGO.Objects;
 using AqHaxCSGO.Objects.Structs;
 using static AqHaxCSGO.Objects.GlobalLists;
+using AqHaxCSGO.Hacks.Features;
+using System.Runtime.InteropServices;
+using GameOverlay.Windows;
+using GameOverlay.Drawing;
 
 namespace AqHaxCSGO.Hacks
 {
     static class WallHack
     {
+        public struct RECT
+        {
+            public int left, top, right, bottom, width, height;
+        }
+        public static int i = 0;
+        public static RECT rect;
+
+        public static string WINDOW_NAME = "Counter-Strike: Global Offensive";
+        public static IntPtr handle = FindWindow(null, WINDOW_NAME);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+        [DllImport("user32.dll", SetLastError = true)]
+
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetWindowRect(IntPtr hwnd, out RECT lpRect);
+
+        public static OverlayWindow window;
+        public static Graphics graphics;
+
+        public static void SetUp()
+        {
+            GetWindowRect(handle, out rect);
+            rect.width = rect.right - rect.left;
+            rect.height = rect.bottom - rect.top;
+
+            window = new OverlayWindow(rect.left, rect.top, rect.width, rect.height)
+            {
+                IsVisible = true,
+                IsTopmost = true
+
+            };
+
+            graphics = new Graphics(IntPtr.Zero, window.Width, window.Height)
+            {
+                MeasureFPS = true,
+                PerPrimitiveAntiAliasing = true,
+                TextAntiAliasing = true,
+                VSync = true,
+            };
+
+            window.Create();
+            graphics.WindowHandle = window.Handle;
+            graphics.Setup();
+        }
         public static void WallHackThread()
         {
+
             while (true)
             {
+                graphics.BeginScene();
+                graphics.ClearScene();
+                DrawPlayerBox(10,500,400,800);
+                DrawPlayerBox(600,200,50,40);
+
+
                 if (!Globals.WallHackEnabled)
                 {
                     Thread.Sleep(Globals.IdleWait);
@@ -70,8 +127,19 @@ namespace AqHaxCSGO.Hacks
                     }
                 }
 
+                graphics.EndScene();
                 Thread.Sleep(Globals.UsageDelay);
             }
+        }
+
+        private static void DrawPlayerBox(int left, int top, int right, int bottom)
+        {
+            graphics.DrawBox2D(
+                graphics.CreateSolidBrush(Color.Blue),
+                graphics.CreateSolidBrush(Color.Transparent),
+                new Rectangle(left,top,right,bottom), 
+                5
+             );
         }
 
         public static void RenderColorThread()

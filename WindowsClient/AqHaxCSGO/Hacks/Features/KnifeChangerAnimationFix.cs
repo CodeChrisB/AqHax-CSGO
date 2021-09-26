@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Threading;
 using AqHaxCSGO.Objects;
 using static AqHaxCSGO.Objects.GlobalLists;
-using SlimDX.XACT3;
 using System.Diagnostics.Eventing.Reader;
 
 namespace AqHaxCSGO.Hacks.Features
